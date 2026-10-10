@@ -22,3 +22,6 @@ Thumbs.db
 
 # streamlit secrets
 .streamlit/secrets.toml
+
+# claude code worktrees
+.claude/
