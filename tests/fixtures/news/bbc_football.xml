@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?><rss xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:atom="http://www.w3.org/2005/Atom" version="2.0" xmlns:media="http://search.yahoo.com/mrss/">
+    <channel>
+        <title><![CDATA[BBC Sport]]></title>
+        <description><![CDATA[BBC Sport - Football]]></description>
+        <link>https://www.bbc.co.uk/sport/football</link>
+        <image>
+            <url>http://news.bbc.co.uk/sol/shared/img/sport_120x60.gif</url>
+            <title>BBC Sport</title>
+            <link>https://www.bbc.co.uk/sport/football</link>
+        </image>
+        <generator>RSS for Node</generator>
+        <lastBuildDate>Sat, 10 Oct 2026 16:45:07 GMT</lastBuildDate>
+        <atom:link href="https://feeds.bbci.co.uk/sport/football/rss.xml" rel="self" type="application/rss+xml"/>
+        <copyright><![CDATA[Copyright: (C) British Broadcasting Corporation, see https://www.bbc.co.uk/usingthebbc/terms-of-use/#15metadataandrssfeeds for terms and conditions of reuse.]]></copyright>
+        <language><![CDATA[en-gb]]></language>
+        <ttl>15</ttl>
+        <item>
+            <title><![CDATA[Hincapie injury adds to Arsenal issues after Guimaraes rescue act]]></title>
+            <description><![CDATA[Heroics and battling performances have already become a theme of Arsenal's season with Bruno Guimaraes coming to the rescue again. ]]></description>
+            <link>https://www.bbc.co.uk/sport/football/articles/c63r5w20ez3do?at_medium=RSS&amp;at_campaign=rss</link>
+            <guid isPermaLink="false">https://www.bbc.co.uk/sport/football/articles/c63r5w20ez3do#0</guid>
+            <pubDate>Sat, 10 Oct 2026 15:44:14 GMT</pubDate>
+            <media:thumbnail width="240" height="134" url="https://ichef.bbci.co.uk/ace/standard/240/cpsprodpb/7a7b/live/dfa63d80-c4b3-11f1-892b-f7bfd6496ad0.jpg"/>
+        </item><item>
+            <title><![CDATA[Who changed the game? - player ratings for Arsenal v Leeds]]></title>
+            <description><![CDATA[How Arsenal and Leeds players rated following their Premier League match.]]></description>
+            <link>https://www.bbc.co.uk/sport/football/articles/cmx2dpwv02e1o?at_medium=RSS&amp;at_campaign=rss</link>
+            <guid isPermaLink="false">https://www.bbc.co.uk/sport/football/articles/cmx2dpwv02e1o#0</guid>
+            <pubDate>Sat, 10 Oct 2026 13:30:28 GMT</pubDate>
+            <media:thumbnail width="240" height="135" url="https://ichef.bbci.co.uk/ace/standard/240/cpsprodpb/ba52/live/206991f0-c4aa-11f1-ac13-6da90f5ff039.jpg"/>
+        </item><item>
+            <title><![CDATA[Time to rise? Ranking European football's sleeping giants]]></title>
+            <description><![CDATA[From Sampdoria to Saint-Etienne and Real Zaragoza, who are the sleeping giants of European football?]]></description>
+            <link>https://www.bbc.co.uk/sport/football/articles/cq5yjyyzd35do?at_medium=RSS&amp;at_campaign=rss</link>
+            <guid isPermaLink="false">https://www.bbc.co.uk/sport/football/articles/cq5yjyyzd35do#1</guid>
+            <pubDate>Sat, 10 Oct 2026 05:14:17 GMT</pubDate>
+            <media:thumbnail width="240" height="135" url="https://ichef.bbci.co.uk/ace/standard/240/cpsprodpb/6cb5/live/a8fc7030-c259-11f1-bc2e-018d645d8d21.png"/>
+        </item><item>
+            <title><![CDATA[Palmer signs new Chelsea contract until 2034]]></title>
+            <description><![CDATA[Cole Palmer signs a new Chelsea contract on improved terms until 2034, one of the longest active deals in the Premier League. ]]></description>
+            <link>https://www.bbc.co.uk/sport/football/articles/cwe9lngxzjpno?at_medium=RSS&amp;at_campaign=rss</link>
+            <guid isPermaLink="false">https://www.bbc.co.uk/sport/football/articles/cwe9lngxzjpno#1</guid>
+            <pubDate>Sat, 10 Oct 2026 09:51:09 GMT</pubDate>
+            <media:thumbnail width="240" height="135" url="https://ichef.bbci.co.uk/ace/standard/240/cpsprodpb/a9a8/live/a94e41f0-c3d3-11f1-95ba-dba767ffba7e.jpg"/>
+        </item><item>
+            <title><![CDATA[Greek takeaways: What did we learn from Lionesses' win?]]></title>
+            <description><![CDATA[England come away from Greece with a valuable first-leg lead in their Women's World Cup qualifying play-off - but who impressed in the 3-1 victory?]]></description>
+            <link>https://www.bbc.co.uk/sport/football/articles/cwp8g1ry6rjlo?at_medium=RSS&amp;at_campaign=rss</link>
+            <guid isPermaLink="false">https://www.bbc.co.uk/sport/football/articles/cwp8g1ry6rjlo#1</guid>
+            <pubDate>Fri, 09 Oct 2026 21:15:24 GMT</pubDate>
+            <media:thumbnail width="240" height="135" url="https://ichef.bbci.co.uk/ace/standard/240/cpsprodpb/dd76/live/11f39650-c420-11f1-9462-0fb8e72a616b.jpg"/>
+        </item><item>
+            <title><![CDATA[Who am I? Plus today's other quizzes]]></title>
+            <description><![CDATA[Test your ball knowledge against today's Who Am I?, Five in Five and Brainteaser.]]></description>
+            <link>https://www.bbc.co.uk/sport/football/articles/c5n49xxjxe4zo?at_medium=RSS&amp;at_campaign=rss</link>
+            <guid isPermaLink="false">https://www.bbc.co.uk/sport/football/articles/c5n49xxjxe4zo#1</guid>
+            <pubDate>Sat, 10 Oct 2026 05:28:48 GMT</pubDate>
+            <media:thumbnail width="240" height="135" url="https://ichef.bbci.co.uk/ace/standard/240/cpsprodpb/1fbf/live/38bd3c70-bda7-11f1-bc2e-018d645d8d21.png"/>
+        </item><item>
+            <title><![CDATA[Sutton's predictions v Starsailor frontman James Walsh]]></title>
+            <description><![CDATA[BBC Sport football expert Chris Sutton takes on Starsailor frontman James Walsh, plus the BBC readers and AI with his predictions for this weekend's Premier League fixtures.]]></description>
+            <link>https://www.bbc.co.uk/sport/football/articles/c5zjx92v1mero?at_medium=RSS&amp;at_campaign=rss</link>
+            <guid isPermaLink="false">https://www.bbc.co.uk/sport/football/articles/c5zjx92v1mero#1</guid>
+            <pubDate>Thu, 08 Oct 2026 20:46:40 GMT</pubDate>
+            <media:thumbnail width="240" height="135" url="https://ichef.bbci.co.uk/ace/standard/240/cpsprodpb/ec26/live/b62ee460-c298-11f1-babe-4199b0e7ccea.png"/>
+        </item><item>
+            <title><![CDATA[Man City whistleblower to remain in witness protection]]></title>
+            <description><![CDATA[The computer hacker who released documents which helped trigger the Premier League investigation into Manchester City will remain under witness protection after authorities in Portugal suspend the decision to end it. ]]></description>
+            <link>https://www.bbc.co.uk/sport/football/articles/cq4g1xerk398o?at_medium=RSS&amp;at_campaign=rss</link>
+            <guid isPermaLink="false">https://www.bbc.co.uk/sport/football/articles/cq4g1xerk398o#2</guid>
+            <pubDate>Fri, 09 Oct 2026 22:59:32 GMT</pubDate>
+            <media:thumbnail width="240" height="135" url="https://ichef.bbci.co.uk/ace/standard/240/cpsprodpb/14fa/live/90b2c580-c432-11f1-ba89-3b6b48238d10.jpg"/>
+        </item>
+    </channel>
+</rss>

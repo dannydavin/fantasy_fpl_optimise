@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<?xml-stylesheet title="XSL_formatting" type="text/xsl" href="/rss/rssRender.xsl"?>
+    <rss version='2.0'>
+    <channel>
+       <title>SkySports | News</title>
+       <link>http://www.skysports.com</link>
+       <description>Sports News</description>
+       <language>en-gb</language>
+       <lastBuildDate>Sat, 10 Oct 2026 17:44:48 BST</lastBuildDate>
+       <copyright>Copyright 2026, BSKYB. All Rights Reserved.</copyright>
+       <category></category>
+       <image>
+            <title>Sky Sports</title>
+            <url>https://www.skysports.com/images/site/ss-logo-07.gif</url>
+            <link>https://www.skysports.com</link>
+       </image>
+       <ttl>120</ttl>
+       	<item>
+           <title><![CDATA[Naderi scores twice as Rangers beat Kilmarnock to move top]]></title>
+           <description><![CDATA[Ryan Naderi scored a double as Rangers moved top of the Scottish Premiership with a 3-1 win over Kilmarnock.]]></description>
+           <link>https://www.skysports.com/football/rangers-vs-kilmarnock/report/558380</link>
+           <pubDate>Sat, 10 Oct 2026 17:30:00 BST</pubDate>
+           <category>Report</category>
+           <enclosure type="image/jpg" url="https://e2.365dm.com/26/10/1920x1080/skysports-ryan-naderi-rangers_7373156.jpg?20261010160132" length="123456" />
+      </item><item>
+           <title><![CDATA[Ronaldo provisionally suspended by Portugal FA after walkout]]></title>
+           <description><![CDATA[Cristiano Ronaldo has been provisionally suspended by Portugal after walking out on the national team.]]></description>
+           <link>https://www.skysports.com/football/news/12040/13597244/cristiano-ronaldo-portuguese-football-federation-provisionally-suspends-forward-after-walkout-following-disagreement-with-manager-jorge-jesus</link>
+           <pubDate>Sat, 10 Oct 2026 17:15:00 BST</pubDate>
+           <category>News Story</category>
+           <enclosure type="image/jpg" url="https://e2.365dm.com/26/10/1920x1080/skysports-cristiano-ronaldo_7372969.jpg?20261010141017" length="123456" />
+      </item><item>
+           <title><![CDATA[Record-breaking Renshaw puts Australia on top in Durban]]></title>
+           <description><![CDATA[Matt Renshaw &#8204;struck a career-best 190 to guide Australia to 390 all out on day two of the &#8203;first test against South Africa at Kingsmead on Saturday, as the home side reached 27-1 in reply before play was &#8203;ended prematurely by bad light.]]></description>
+           <link>https://www.skysports.com/cricket/news/12040/13597340/south-africa-vs-australia-matt-renshaw-8204strikes-career-best-190-to-guide-australia-to-390-all-out-on-day-two-of-the-8203first-test</link>
+           <pubDate>Sat, 10 Oct 2026 16:25:00 BST</pubDate>
+           <category>News Story</category>
+           <enclosure type="image/jpg" url="https://e0.365dm.com/26/10/1920x1080/skysports-matt-renshaw-australia_7373179.jpg?20261010161342" length="123456" />
+      </item><item>
+           <title><![CDATA[Preston beaten by Millwall in Alexander's first game in charge]]></title>
+           <description><![CDATA[Camiel Neghli ensured it was a baptism of fire for new Preston manager Graham Alexander as his late strike sealed a 1-0 win for Millwall at Deepdale.]]></description>
+           <link>https://www.skysports.com/football/preston-north-end-vs-millwall/report/560599</link>
+           <pubDate>Sat, 10 Oct 2026 17:15:00 BST</pubDate>
+           <category>Report</category>
+           <enclosure type="image/jpg" url="https://e2.365dm.com/26/10/1920x1080/skysports-cami-camiel-neghli_7373381.jpg?20261010174020" length="123456" />
+      </item><item>
+           <title><![CDATA[Gudjohnsen, Cantwell fire Blackburn to another home win]]></title>
+           <description><![CDATA[Blackburn made it back-to-back home wins with a battling 2-1 victory over Cardiff in the Championship.]]></description>
+           <link>https://www.skysports.com/football/blackburn-rovers-vs-cardiff-city/report/560594</link>
+           <pubDate>Sat, 10 Oct 2026 17:15:00 BST</pubDate>
+           <category>Report</category>
+           <enclosure type="image/jpg" url="https://e1.365dm.com/26/10/1920x1080/skysports-todd-cantwell-blackburn_7373366.jpg?20261010173541" length="123456" />
+      </item><item>
+           <title><![CDATA[Henderson stars as Chelsea thrash Bournemouth]]></title>
+           <description><![CDATA[Chelsea thumped Bournemouth 5-1 in a stunning show of their attacking firepower to go fifth in the early Premier League table.]]></description>
+           <link>https://www.skysports.com/football/chelsea-vs-bournemouth/report/559496</link>
+           <pubDate>Sat, 10 Oct 2026 17:00:00 BST</pubDate>
+           <category>Report</category>
+           <enclosure type="image/jpg" url="https://e0.365dm.com/26/10/1920x1080/skysports-jordan-henderson_7373262.jpg?20261010164222" length="123456" />
+      </item><item>
+           <title><![CDATA[Ten-player Brighton win at Sunderland to stay third]]></title>
+           <description><![CDATA[High-flying Brighton and Hove Albion won 2-0 at Sunderland to make it three straight Premier League wins without conceding despite having to play more than half an hour with ten men.]]></description>
+           <link>https://www.skysports.com/football/sunderland-vs-brighton-and-hove-albion/report/559503</link>
+           <pubDate>Sat, 10 Oct 2026 17:00:00 BST</pubDate>
+           <category>Report</category>
+           <enclosure type="image/jpg" url="https://e0.365dm.com/26/10/1920x1080/skysports-maxim-de-cuyper-brighton_7373201.jpg?20261010161840" length="123456" />
+      </item><item>
+           <title><![CDATA[Alphonse Le Grande edges Sea Lantern for historic Cesarewitch win]]></title>
+           <description><![CDATA[Alphonse Le Grande became only the second horse in history to win the Club Godolphin Cesarewitch twice when coming with a late rattle to foil a major gamble on Sea Lantern at Newmarket.]]></description>
+           <link>https://www.skysports.com/racing/news/12040/13597377/cesarewitch-alphonse-le-grande-edges-sea-lantern-for-historic-newmarket-win</link>
+           <pubDate>Sat, 10 Oct 2026 16:48:00 BST</pubDate>
+           <category>News Story</category>
+           <enclosure type="image/jpg" url="https://e0.365dm.com/26/10/1920x1080/skysports-alphonse-le-grande_7373273.jpg?20261010165043" length="123456" />
+      </item>
+            </channel>
+      </rss>
+ 
