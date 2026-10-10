@@ -1,0 +1,24 @@
+# data (raw pulls, processed tables, HTTP cache)
+data/
+*.parquet
+!tests/fixtures/**
+
+# python
+.venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.ruff_cache/
+*.egg-info/
+dist/
+build/
+
+# notebooks / editors / os
+.ipynb_checkpoints/
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# streamlit secrets
+.streamlit/secrets.toml
