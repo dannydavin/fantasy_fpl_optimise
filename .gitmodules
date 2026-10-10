@@ -1,0 +1,6 @@
+[submodule "external/FPL-Optimization-Tools"]
+	path = external/FPL-Optimization-Tools
+	url = https://github.com/sertalpbilal/FPL-Optimization-Tools
+[submodule "external/airsenal"]
+	path = external/airsenal
+	url = https://github.com/alan-turing-institute/AIrsenal
