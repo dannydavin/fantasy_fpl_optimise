@@ -23,5 +23,7 @@ Thumbs.db
 # streamlit secrets
 .streamlit/secrets.toml
 
-# claude code worktrees
-.claude/
+# claude code: keep project skills, ignore worktrees and skill eval workspaces
+.claude/*
+!.claude/skills/
+.claude/skills/*-workspace/

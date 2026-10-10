@@ -2,7 +2,7 @@
 
     uv run python scripts/plan.py                          # 5-GW horizon from stored tables
     uv run python scripts/plan.py --horizon 6 --cross-check
-    uv run python scripts/plan.py --chip 9:bboost --lock 411 --ban 165
+    uv run python scripts/plan.py --chip 9:bboost --lock Haaland 411 --ban Saka
 """
 
 from __future__ import annotations
@@ -10,6 +10,7 @@ from __future__ import annotations
 import argparse
 import sys
 import time
+import unicodedata
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -20,6 +21,31 @@ import pandas as pd  # noqa: E402
 
 from fpl import storage  # noqa: E402
 from fpl.optimise import fplopt_wrapper, solver  # noqa: E402
+
+
+def _norm(name: str) -> str:
+    s = unicodedata.normalize("NFKD", str(name).replace("ø", "o").replace("Ø", "O"))
+    return "".join(c for c in s if not unicodedata.combining(c)).lower().replace(".", " ").strip()
+
+
+def resolve(tokens: list[str], players: pd.DataFrame, squad_ids: set[int]) -> list[int]:
+    """Player ids from ids or names (web_name, accent/case-insensitive; squad wins ties)."""
+    keys = players["web_name"].map(_norm)
+    ids = []
+    for tok in tokens:
+        if tok.isdigit():
+            ids.append(int(tok))
+            continue
+        hit = players.loc[keys == _norm(tok), "player_id"].tolist()
+        if not hit:  # fall back to substring, e.g. "Pedro" -> "João Pedro"
+            hit = players.loc[keys.str.contains(_norm(tok), regex=False), "player_id"].tolist()
+        if len(hit) > 1:
+            hit = [i for i in hit if i in squad_ids] or hit
+        if len(hit) != 1:
+            names = players.set_index("player_id").loc[hit, "web_name"].tolist() if hit else []
+            raise SystemExit(f"--lock/--ban {tok!r}: {'ambiguous ' + str(names) if hit else 'no match'}")
+        ids.append(int(hit[0]))
+    return ids
 
 
 def show(title: str, plan: solver.Plan, names: pd.Series, gw: int) -> None:
@@ -36,6 +62,7 @@ def show(title: str, plan: solver.Plan, names: pd.Series, gw: int) -> None:
     vice = xi.loc[xi["is_vice_captain"], "player_id"].map(names).tolist()
     xp_xi = plan.summary.loc[plan.summary["gw"] == gw, "xp_xi"].sum()
     print(f"GW{gw} captain {cap} vice {vice}, XI xP {xp_xi:.2f} (incl. captain)")
+    print(f"net xP over horizon: {net_xp(plan):.2f}")
 
 
 def net_xp(plan: solver.Plan) -> float:
@@ -47,8 +74,8 @@ def main(argv: list[str] | None = None) -> int:
     p.add_argument("--gw", type=int, default=None)
     p.add_argument("--horizon", type=int, default=5)
     p.add_argument("--model", default="baseline")
-    p.add_argument("--lock", type=int, nargs="*", default=[])
-    p.add_argument("--ban", type=int, nargs="*", default=[])
+    p.add_argument("--lock", nargs="*", default=[], help="player ids or names to keep/buy")
+    p.add_argument("--ban", nargs="*", default=[], help="player ids or names to exclude")
     p.add_argument("--chip", action="append", default=[], help="GW:chip, e.g. 9:bboost")
     p.add_argument("--cross-check", action="store_true", help="also run FPL-Optimization-Tools")
     p.add_argument("--secs", type=int, default=120, help="external solver time limit")
@@ -63,7 +90,11 @@ def main(argv: list[str] | None = None) -> int:
     names = players.set_index("player_id")["web_name"]
     print(f"GW{gw}: bank £{bank:.1f}m, {ft} FT, chips {entry['chips_available']}")
 
-    opts = dict(chips=chips or None, lock=a.lock, ban=a.ban)
+    squad_ids = set(my_team["player_id"].astype(int))
+    lock, ban = resolve(a.lock, players, squad_ids), resolve(a.ban, players, set())
+    if lock or ban:
+        print(f"lock {names.reindex(lock).tolist()} ban {names.reindex(ban).tolist()}")
+    opts = dict(chips=chips or None, lock=lock, ban=ban)
     t = time.time()
     plan = solver.solve_from_storage(gw, a.horizon, model=a.model, **opts)
     show(f"MILP ({time.time() - t:.0f}s)", plan, names, gw)
