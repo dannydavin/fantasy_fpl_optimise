@@ -136,7 +136,7 @@ def show_plan(plan, title: str, check: bool = True) -> None:
     m1.metric("xP total (after hits)", f"{net:.1f}")
     m2.metric("Hits", int(s["hits"].sum()))
     m3.metric("Transfers", int(s["transfers"].sum()))
-    st.dataframe(s.round(2), hide_index=True, use_container_width=True)
+    st.dataframe(s.round(2), hide_index=True, width="stretch")
     if check:
         errs = validate_plan(plan, players, my_team, *st.session_state["plan_args"])
         if errs:
@@ -167,7 +167,7 @@ def show_plan(plan, title: str, check: bool = True) -> None:
                                                lg["is_vice_captain"], strict=True)],
                 Role=["XI" if x else "Bench" for x in lg["in_xi"]])
             st.dataframe(lg[["slot", "Role", "position", "Player", "multiplier", "xp"]]
-                         .round(2), hide_index=True, use_container_width=True)
+                         .round(2), hide_index=True, width="stretch")
 
 
 if "plan" in st.session_state:
