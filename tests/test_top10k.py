@@ -75,3 +75,25 @@ def test_run_stops_when_no_next_page(data_root):
     with _mock_client(set()) as c:
         top10k.run(c, limit=40, gw=PICKS_GW)
     assert len(storage.read_table("top10k_entries", PICKS_GW)) == 40
+
+
+def test_fetch_standings_pages_past_duplicates():
+    """Live-GW rank shifts repeat entries across pages; paging continues until limit is met."""
+    standings = load_fixture("leagues-classic_314_standings_page_standings1_phase1")
+    results = standings["standings"]["results"]
+
+    def handler(req: httpx.Request) -> httpx.Response:
+        page = int(req.url.params["page_standings"])
+        # page 2 repeats the last entry of page 1, so 2 pages yield only 99 unique entries
+        rows = [{**r, "entry": r["entry"] + (page - 1) * 10_000_000, "rank": r["rank"] + (page - 1) * 50}
+                for r in results]
+        if page == 2:
+            rows[0] = results[-1]
+        data = {**standings, "standings": {**standings["standings"], "results": rows,
+                                           "has_next": page < 5}}
+        return httpx.Response(200, json=data)
+
+    with FPLClient(transport=httpx.MockTransport(handler), use_cache=False, rate=0) as c:
+        df = top10k.fetch_standings(c, 100, PICKS_GW)
+    assert len(df) == 100
+    assert df["entry_id"].is_unique

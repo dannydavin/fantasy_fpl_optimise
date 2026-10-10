@@ -73,10 +73,16 @@ def parse_picks(picks: dict, entry_id: int, rank: int, gw: int) -> pd.DataFrame:
 def fetch_standings(client: FPLClient, limit: int, gw: int) -> pd.DataFrame:
     league = client.settings.overall_league_id
     frames = []
-    for page in range(1, math.ceil(limit / PAGE_SIZE) + 1):
+    seen: set[int] = set()
+    # Standings shift while a GW is live, so entries can repeat across pages; keep paging
+    # (bounded) until `limit` unique entries are collected.
+    max_pages = math.ceil(limit / PAGE_SIZE) + 2
+    for page in range(1, max_pages + 1):
         data = client.league_standings(league, page=page)
-        frames.append(parse_standings(data, gw))
-        if not data["standings"].get("has_next"):
+        df = parse_standings(data, gw)
+        frames.append(df)
+        seen.update(df["entry_id"].tolist())
+        if len(seen) >= limit or not data["standings"].get("has_next"):
             break
     if not frames:
         return pd.DataFrame()

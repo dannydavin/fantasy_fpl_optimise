@@ -39,3 +39,28 @@ def data_root(tmp_path: Path, monkeypatch) -> Path:
     get_settings.cache_clear()
     yield tmp_path / "data"
     get_settings.cache_clear()
+
+
+@pytest.fixture(scope="session")
+def _ui_data_dir(tmp_path_factory) -> Path:
+    from tests.ui_data import write_ui_data
+
+    return write_ui_data(tmp_path_factory.mktemp("ui") / "data")
+
+
+@pytest.fixture
+def ui_data(_ui_data_dir: Path, monkeypatch) -> Path:
+    """Read-only, fully populated data dir (see tests/ui_data.py); FPL_DATA_DIR points at it.
+
+    Built once per session — tests must not write into it (copy it if you need to).
+    """
+    monkeypatch.setenv("FPL_DATA_DIR", str(_ui_data_dir))
+    get_settings.cache_clear()
+    try:
+        import streamlit as st
+
+        st.cache_data.clear()
+    except Exception:  # noqa: BLE001 - streamlit optional for non-UI tests
+        pass
+    yield _ui_data_dir
+    get_settings.cache_clear()
