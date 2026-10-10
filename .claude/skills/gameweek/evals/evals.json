@@ -1,0 +1,48 @@
+{
+  "skill_name": "gameweek",
+  "evals": [
+    {
+      "id": 0,
+      "prompt": "who should I captain this week and is there a transfer worth making?",
+      "expected_output": "Legal plan with GW7 transfer (or roll), captain/vice, cross-check comparison, injury flags.",
+      "files": [],
+      "assertions": [
+        "Final answer names a GW7 transfer (player out -> player in) or explicitly recommends rolling the FT",
+        "Final answer names a GW7 captain and vice-captain",
+        "Recommendation comes from the repo's MILP planner (scripts/plan.py or fpl.optimise.solver) and the plan was confirmed legal",
+        "FPL-Optimization-Tools cross-check was run and its GW7 agreement is reported",
+        "Answer is concise and does not include filler about absent problems (e.g. 'no injury news', later-GW cross-check differences)",
+        "Later moves are shown as a per-GW list (one line per GW)",
+        "Did not run the full --top10k --limit 10000 pull or attempt to make transfers on the FPL site"
+      ]
+    },
+    {
+      "id": 1,
+      "prompt": "thinking of bench boosting in GW9 \u2014 is it worth it vs holding the chip? run the numbers",
+      "expected_output": "Two planner runs (with and without bboost in GW9) and a quantified chip value.",
+      "files": [],
+      "assertions": [
+        "Planner was run with bench boost in GW9",
+        "Planner was run with bench boost in at least two other GWs as well as a no-chip/hold run",
+        "Final answer includes a table comparing chip weeks (net xP and gain vs hold)",
+        "Final answer mentions the blank/double gameweek calendar (whether any DGW exists in the horizon)",
+        "Final answer gives a clear play-or-hold recommendation with a reason",
+        "Did not run the full --top10k --limit 10000 pull or attempt to make transfers on the FPL site"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "keep Haaland and Gabriel no matter what, I don't want Saka. best plan over the next 6 GWs, skip the external check",
+      "expected_output": "6-GW plan with Haaland+Gabriel locked, Saka banned, no cross-check.",
+      "files": [],
+      "assertions": [
+        "Planner run used a 6-GW horizon",
+        "Haaland and Gabriel were locked (by id or name) in the planner run",
+        "Saka was banned in the planner run",
+        "FPL-Optimization-Tools cross-check was NOT run",
+        "Final answer lists transfers as a per-GW list covering GW7-GW12 plus the GW7 captain",
+        "Answer is concise and does not include filler about absent problems (e.g. 'no injury news')"
+      ]
+    }
+  ]
+}

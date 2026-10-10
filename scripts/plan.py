@@ -3,6 +3,7 @@
     uv run python scripts/plan.py                          # 5-GW horizon from stored tables
     uv run python scripts/plan.py --horizon 6 --cross-check
     uv run python scripts/plan.py --chip 9:bboost --lock Haaland 411 --ban Saka
+    uv run python scripts/plan.py --compare-chip bboost    # chip in each GW vs holding it
 """
 
 from __future__ import annotations
@@ -69,6 +70,46 @@ def net_xp(plan: solver.Plan) -> float:
     return float(plan.summary["xp_total"].sum() - plan.summary["hit_cost"].sum())
 
 
+def calendar(gws: list[int]) -> None:
+    """Teams with a blank or double in each GW of the horizon."""
+    from fpl.features.fixtures import blank_double_calendar
+
+    cal = blank_double_calendar(storage.read_table("fixtures"), gws)
+    short = storage.read_table("teams").set_index("team_id")["short_name"]
+    for g in gws:
+        row = cal[cal["gw"] == g]
+        parts = [f"{k}s: {', '.join(short.reindex(row.loc[row['kind'] == k, 'team_id']).astype(str))}"
+                 for k in ("double", "blank") if (row["kind"] == k).any()]
+        print(f"GW{g}: {'; '.join(parts) or 'all single'}")
+
+
+def compare_chip(chip: str, gw: int, horizon: int, names: pd.Series, model: str, opts: dict) -> None:
+    """Re-solve with ``chip`` in each GW of the horizon and tabulate against holding it."""
+    gws = list(range(gw, gw + horizon))
+    print(f"\n== {chip} by GW (other options unchanged)")
+    calendar(gws)
+    base_chips = dict(opts.pop("chips") or {})
+    rows = []
+    for g in [None, *gws]:
+        if g in base_chips:
+            continue
+        chips = {**base_chips, **({g: chip} if g else {})}
+        plan = solver.solve_from_storage(gw, horizon, model=model, chips=chips or None, **opts)
+        lu = plan.lineups[plan.lineups["gw"] == g]
+        extra = (float("nan") if g is None else lu.loc[~lu["in_xi"], "xp"].sum() if chip == "bboost"
+                 else lu.loc[lu["is_captain"], "xp"].sum() if chip == "3xc" else float("nan"))
+        moves = plan.transfers[plan.transfers["gw"] == gw]
+        first = ", ".join(f"{names.get(o)} -> {names.get(i)}"
+                          for o, i in zip(moves["player_out"], moves["player_in"], strict=True)) or "roll"
+        rows.append({"chip_gw": g or "hold", "net_xp": net_xp(plan), "chip_extra_xp": extra,
+                     "hits": int(plan.summary["hits"].sum()), f"gw{gw}_move": first})
+    df = pd.DataFrame(rows)
+    df.insert(2, "vs_hold", df["net_xp"] - df.loc[df["chip_gw"] == "hold", "net_xp"].iat[0])
+    print(df.round(2).to_string(index=False))
+    print("chip_extra_xp: bench xP that GW (bboost) / extra captain xP (3xc); hits over the horizon")
+    print("hold = chip not played inside this horizon; its value in a later GW is not counted")
+
+
 def main(argv: list[str] | None = None) -> int:
     p = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     p.add_argument("--gw", type=int, default=None)
@@ -77,6 +118,7 @@ def main(argv: list[str] | None = None) -> int:
     p.add_argument("--lock", nargs="*", default=[], help="player ids or names to keep/buy")
     p.add_argument("--ban", nargs="*", default=[], help="player ids or names to exclude")
     p.add_argument("--chip", action="append", default=[], help="GW:chip, e.g. 9:bboost")
+    p.add_argument("--compare-chip", metavar="CHIP", help="table of CHIP played in each GW vs hold")
     p.add_argument("--cross-check", action="store_true", help="also run FPL-Optimization-Tools")
     p.add_argument("--secs", type=int, default=120, help="external solver time limit")
     a = p.parse_args(argv)
@@ -95,6 +137,9 @@ def main(argv: list[str] | None = None) -> int:
     if lock or ban:
         print(f"lock {names.reindex(lock).tolist()} ban {names.reindex(ban).tolist()}")
     opts = dict(chips=chips or None, lock=lock, ban=ban)
+    if a.compare_chip:
+        compare_chip(solver.norm_chip(a.compare_chip), gw, a.horizon, names, a.model, opts)
+        return 0
     t = time.time()
     plan = solver.solve_from_storage(gw, a.horizon, model=a.model, **opts)
     show(f"MILP ({time.time() - t:.0f}s)", plan, names, gw)
