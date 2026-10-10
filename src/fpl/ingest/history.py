@@ -21,7 +21,7 @@ from fpl.config import get_settings
 
 log = logging.getLogger(__name__)
 
-RAW_BASE = "https://raw." + "git" + "hubusercontent.com/vaastav/Fantasy-Premier-League/master/data"
+RAW_BASE = "https://raw.githubusercontent.com/vaastav/Fantasy-Premier-League/master/data"
 POSITION_MAP = {"GK": "GKP", "GKP": "GKP", "DEF": "DEF", "MID": "MID", "FWD": "FWD", "AM": "MID"}
 _ELEMENT_TYPE_POS = {1: "GKP", 2: "DEF", 3: "MID", 4: "FWD"}
 NAN = float("nan")
