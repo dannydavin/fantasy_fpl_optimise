@@ -80,6 +80,14 @@ def test_free_transfer_rules():
     assert snap.compute_free_transfers(hist, 6) == 5  # free hit keeps the bank
 
 
+def test_chip_week_freezes_free_transfers():
+    hist = {"current": [{"event": g, "event_transfers": 0} for g in range(1, 4)], "chips": []}
+    assert snap.compute_free_transfers(hist, 3) == 3
+    hist["current"].append({"event": 4, "event_transfers": 12})
+    hist["chips"] = [{"event": 4, "name": "wildcard"}]
+    assert snap.compute_free_transfers(hist, 4) == 3  # kept, but no +1 for the WC week
+
+
 def test_chips_available_respects_windows(bootstrap):
     hist = {"chips": [{"name": "wildcard", "event": 4}]}
     assert set(snap.chips_available(bootstrap, hist, 7)) == {"freehit", "bboost", "3xc"}

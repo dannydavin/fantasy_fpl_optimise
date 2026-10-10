@@ -19,7 +19,6 @@ from fpl.schemas import MAX_FREE_TRANSFERS, POSITIONS
 # Whether playing a wildcard consumes the week's free transfer. Recorded data for team
 # 1608168 (WC in GW4, 1 FT shown for GW7) is only consistent with the WC consuming it;
 # Free Hit leaves the bank untouched.
-WILDCARD_CONSUMES_FT = True
 
 
 def _f(x) -> float | None:
@@ -230,24 +229,16 @@ def compute_free_transfers(history: dict, upto_gw: int) -> int:
     """Free transfers available for the GW after ``upto_gw``.
 
     GW1 is unlimited; from GW2 you get 1 per GW, unused ones roll over to a max of 5.
-    Transfers beyond the FTs cost hits and leave 0 banked. A Free Hit keeps the bank
-    unchanged; a Wildcard consumes the week's FT (see ``WILDCARD_CONSUMES_FT``).
+    Transfers beyond the FTs cost hits and leave 0 banked. In a Wildcard or Free Hit
+    week the count is frozen: saved FTs are kept but no extra FT accrues for that week.
     """
     used_by_gw = {h["event"]: h["event_transfers"] for h in history.get("current", [])}
     chips = {c["event"]: c["name"] for c in history.get("chips", [])}
     ft = 1  # available going into GW2
     for g in range(2, upto_gw + 1):
-        chip = chips.get(g)
-        used = used_by_gw.get(g, 0)
-        if chip == "freehit":
-            remaining = ft
-        elif chip == "wildcard" and WILDCARD_CONSUMES_FT:
-            remaining = max(ft - max(used, 1), 0)
-        elif chip == "wildcard":
-            remaining = ft
-        else:
-            remaining = max(ft - used, 0)
-        ft = min(MAX_FREE_TRANSFERS, remaining + 1)
+        if chips.get(g) in ("wildcard", "freehit"):
+            continue
+        ft = min(MAX_FREE_TRANSFERS, max(ft - used_by_gw.get(g, 0), 0) + 1)
     return ft
 
 
