@@ -38,6 +38,7 @@ so the day of the deadline is best for a final refresh).
 uv run python scripts/update.py                        # snapshot, fixtures, form, news, xP (~15 s)
 uv run python scripts/update.py --top10k --limit 10000 # + top-10k picks/ownership (~40 min first run)
 uv run streamlit run app/Home.py                       # open the app
+uv run python scripts/plan.py --cross-check           # solver plan + FPL-Optimization-Tools check
 ```
 
 - `--top10k --limit 500` is a quick smoke test (a couple of minutes). Picks for a passed
