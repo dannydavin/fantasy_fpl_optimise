@@ -132,3 +132,81 @@ def reload_button() -> None:
     if st.sidebar.button("Reload data"):
         st.cache_data.clear()
         st.rerun()
+
+
+# ---------------------------------------------------------------- Wave 2 E additions
+
+POSITION_ORDER = ["GKP", "DEF", "MID", "FWD"]
+POSITION_COLOURS = {"GKP": "#e8a317", "DEF": "#2a9d8f", "MID": "#457b9d", "FWD": "#d1495b"}
+# difficulty 1 (easy) -> 5 (hard)
+DIFFICULTY_COLOURS = ["#2e9e5b", "#8fd18f", "#e6e6e6", "#f2a07b", "#d9534f"]
+BLANK_COLOUR = "#bdbdbd"
+
+
+def page_setup(title: str, icon: str = ":soccer:") -> None:
+    """Set page config, title and sidebar reload button (call first on each page)."""
+    st.set_page_config(page_title=f"FPL - {title}", page_icon=icon, layout="wide")
+    st.title(title)
+    reload_button()
+
+
+def difficulty_colour(difficulty: float | None) -> str:
+    """Hex colour for a 1-5 difficulty (floats are rounded); grey when missing."""
+    if difficulty is None or pd.isna(difficulty):
+        return BLANK_COLOUR
+    idx = min(max(int(round(float(difficulty))), 1), 5) - 1
+    return DIFFICULTY_COLOURS[idx]
+
+
+def planning_gw() -> int | None:
+    """GW being planned (my_entry.gw, else players.gw)."""
+    for table in ("my_entry", "players"):
+        df = load(table)
+        if not df.empty and df["gw"].notna().any():
+            return int(df["gw"].iloc[0])
+    return None
+
+
+def fixture_cells(
+    ticker: pd.DataFrame,
+    shorts: dict[int, str],
+    start_gw: int,
+    n: int = 6,
+    metric: str = "difficulty",
+) -> pd.DataFrame:
+    """Long table (team_id, gw, label, value, n_fixtures) for every team x GW in the window.
+
+    ``label`` is e.g. "BHA (H)"; a DGW joins with " + "; a blank GW has label "-" and
+    value NaN. ``value`` is the mean of ``metric`` over that GW's fixtures.
+    """
+    cols = ["team_id", "gw", "label", "value", "n_fixtures"]
+    if ticker.empty:
+        return pd.DataFrame(columns=cols)
+    gws = list(range(start_gw, start_gw + n))
+    teams = sorted(set(ticker["team_id"].astype(int)))
+    t = ticker[ticker["gw"].isin(gws)]
+    groups = {k: g for k, g in t.groupby(["team_id", "gw"])}
+    rows = []
+    for team in teams:
+        for gw in gws:
+            g = groups.get((team, gw))
+            if g is None or g.empty:
+                rows.append({"team_id": team, "gw": gw, "label": "-", "value": float("nan"),
+                             "n_fixtures": 0})
+                continue
+            labels = [
+                f"{shorts.get(int(r.opponent_id), r.opponent_id)} ({'H' if r.is_home else 'A'})"
+                for r in g.itertuples()
+            ]
+            rows.append({"team_id": team, "gw": gw, "label": " + ".join(labels),
+                         "value": float(g[metric].mean()), "n_fixtures": len(g)})
+    return pd.DataFrame(rows, columns=cols)
+
+
+def team_fixture_labels(
+    ticker: pd.DataFrame, team_id: int, shorts: dict[int, str], start_gw: int, n: int = 6
+) -> list[str]:
+    """Next-``n`` GW fixture labels for one team ("-" for blanks)."""
+    c = fixture_cells(ticker, shorts, start_gw, n)
+    c = c[c["team_id"] == int(team_id)].sort_values("gw")
+    return c["label"].tolist() if not c.empty else ["-"] * n
