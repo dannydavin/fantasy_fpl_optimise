@@ -65,6 +65,14 @@ def test_parse_results():
     assert s["transfers"] == 1 and s["hits"] == 0 and s["bank"] == pytest.approx(0.5)
     assert plan.lineups["is_captain"].sum() == 1
     assert sorted(plan.lineups["slot"]) == [1, 2, 12]
+    assert (plan.lineups["team_id"] == 0).all()  # no players table -> unknown team
+
+    players = pd.DataFrame({"player_id": [1, 2, 3], "team_id": [5, 6, 7],
+                            "web_name": ["Gk1", "Gk2", "Le Fée"]})
+    plan = w.parse_results(pd.DataFrame(rows), bank=1.0, free_transfers=1, players=players)
+    lu = plan.lineups.set_index("player_id")
+    assert lu["team_id"].to_dict() == {1: 5, 2: 6, 3: 7}
+    assert lu.loc[3, "web_name"] == "Le Fée"
 
 
 @pytest.mark.skipif(os.environ.get("FPLOPT_RUN") != "1", reason="set FPLOPT_RUN=1 (needs network)")

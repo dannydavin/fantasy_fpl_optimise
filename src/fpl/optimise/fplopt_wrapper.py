@@ -179,10 +179,19 @@ def run_tool(workdir: Path, timeout: float = 900) -> subprocess.CompletedProcess
 
 
 def parse_results(path: Path | pd.DataFrame, bank: float | None = None,
-                  free_transfers: int | None = None) -> Plan:
-    """Tool result CSV (``picks`` frame) -> Plan."""
-    p = pd.read_csv(path) if not isinstance(path, pd.DataFrame) else path
-    p = p[p["squad"] > 0.5] if "squad" in p.columns else p
+                  free_transfers: int | None = None,
+                  players: pd.DataFrame | None = None) -> Plan:
+    """Tool result CSV (``picks`` frame) -> Plan.
+
+    ``players`` (optional) supplies team_id and web_name; the tool's own names can be mangled
+    by its CSV encoding on Windows.
+    """
+    teams: dict[int, int] = {}
+    names: dict[int, str] = {}
+    if players is not None and len(players):
+        teams = dict(zip(players["player_id"].astype(int), players["team_id"].astype(int),
+                         strict=True))
+        names = dict(zip(players["player_id"].astype(int), players["web_name"], strict=True))
     allp = path if isinstance(path, pd.DataFrame) else pd.read_csv(path)
     lines, trans, rows = [], [], []
     cash = bank
@@ -198,8 +207,9 @@ def parse_results(path: Path | pd.DataFrame, bank: float | None = None,
         for r in sq.itertuples():
             is_c = r.captain > 0.5
             lines.append({
-                "gw": int(gw), "player_id": int(r.id), "web_name": r.name,
-                "position": POS_LONG.get(r.pos, r.pos), "team_id": 0, "slot": slot[int(r.id)],
+                "gw": int(gw), "player_id": int(r.id),
+                "web_name": names.get(int(r.id), r.name),
+                "position": POS_LONG.get(r.pos, r.pos), "team_id": teams.get(int(r.id), 0), "slot": slot[int(r.id)],
                 "multiplier": int(r.multiplier), "is_captain": bool(is_c),
                 "is_vice_captain": bool(r.vicecaptain > 0.5), "xp": float(r.xP),
                 "in_xi": bool(r.lineup > 0.5)})
@@ -244,7 +254,7 @@ def cross_check(xp: pd.DataFrame, players: pd.DataFrame, my_team: pd.DataFrame, 
     if r.returncode != 0 or not results:
         raise RuntimeError(f"FPL-Optimization-Tools failed (rc={r.returncode}): "
                            f"{(r.stderr or r.stdout)[-1500:]}")
-    plan = parse_results(results[-1], bank, free_transfers)
+    plan = parse_results(results[-1], bank, free_transfers, players)
     plan.params["workdir"] = str(work)
     plan.params["stdout"] = r.stdout
     return plan
