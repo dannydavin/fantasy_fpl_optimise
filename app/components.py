@@ -75,7 +75,7 @@ def build_squad(
     pcols = [c for c in (
         "player_id", "web_name", "team_id", "team_short", "position", "element_type",
         "status", "chance_of_playing_next_round", "news", "selected_by_percent", "form",
-        "total_points", "price_risk", "net_transfers_event",
+        "total_points", "price_risk", "net_transfers_event", "team_code",
     ) if c in players.columns]
     out = my_team.merge(players[pcols], on="player_id", how="left")
     if start_gw is None:
@@ -210,3 +210,105 @@ def team_fixture_labels(
     c = fixture_cells(ticker, shorts, start_gw, n)
     c = c[c["team_id"] == int(team_id)].sort_values("gw")
     return c["label"].tolist() if not c.empty else ["-"] * n
+
+
+# ---------------------------------------------------------------- visual helpers
+
+SHIRT_URL = "https://fantasy.premierleague.com/dist/img/shirts/standard/shirt_{code}{gk}-110.webp"
+STATUS_TEXT = {"d": "Doubtful", "i": "Injured", "s": "Suspended", "u": "Unavailable",
+               "n": "Not in squad"}
+
+
+def hero(title: str, subtitle: str = "", pills: list[str] | None = None) -> None:
+    """Blue gradient banner (fixed colours so it reads the same in light and dark mode)."""
+    chips = "".join(f'<span class="hero-pill">{p}</span>' for p in pills or [])
+    st.html(f"""
+<style>
+.hero {{ background: linear-gradient(120deg, #0b2a5b 0%, #1d5fd1 60%, #3b8cff 100%);
+  color: #fff; border-radius: 14px; padding: 22px 26px; position: relative; overflow: hidden; }}
+.hero::after {{ content: ""; position: absolute; right: -60px; top: -60px; width: 240px;
+  height: 240px; border-radius: 50%; border: 28px solid rgba(255,255,255,.08); }}
+.hero h1 {{ margin: 0; font-size: 2rem; font-weight: 800; color: #fff; line-height: 1.15; }}
+.hero p {{ margin: 6px 0 12px; opacity: .85; font-size: 1rem; }}
+.hero-pill {{ display: inline-block; background: rgba(255,255,255,.16);
+  border: 1px solid rgba(255,255,255,.28); border-radius: 999px; padding: 3px 12px;
+  margin: 0 6px 6px 0; font-size: .85rem; font-weight: 600; }}
+</style>
+<div class="hero"><h1>{title}</h1><p>{subtitle}</p>{chips}</div>""")
+
+
+def shirt_url(team_code: int | float | None, is_gk: bool = False) -> str | None:
+    if team_code is None or pd.isna(team_code):
+        return None
+    return SHIRT_URL.format(code=int(team_code), gk="_1" if is_gk else "")
+
+
+def _pitch_card(r: dict) -> str:
+    img = shirt_url(r.get("team_code"), r.get("position") == "GKP")
+    shirt = (f'<img src="{img}" alt="{r.get("team_short", "")}">' if img else
+             f'<div class="shirt-fallback">{r.get("team_short", "")}</div>')
+    badges = ""
+    if r.get("role"):
+        badges += f'<span class="badge cap">{r["role"]}</span>'
+    status = r.get("status")
+    if status and status != "a":
+        cop = r.get("chance_of_playing_next_round")
+        sev = "warn" if status == "d" and pd.notna(cop) and cop >= 50 else "out"
+        tip = STATUS_TEXT.get(status, status) + (f" {int(cop)}%" if pd.notna(cop) else "")
+        badges += f'<span class="badge {sev}" title="{tip}">!</span>'
+    return (f'<div class="pcard">{badges}{shirt}'
+            f'<div class="pname">{r["web_name"]}</div>'
+            f'<div class="pinfo">{r.get("info", "")}</div></div>')
+
+
+def pitch_html(squad: pd.DataFrame) -> str:
+    """FPL-style pitch for a squad frame with columns web_name, position, slot and optional
+    team_code, team_short, role, status, chance_of_playing_next_round, info (sub-label)."""
+    rows = squad.to_dict("records")
+    xi = [r for r in rows if r["slot"] <= 11]
+    bench = sorted((r for r in rows if r["slot"] > 11), key=lambda r: r["slot"])
+    lines = "".join(
+        '<div class="prow">' + "".join(_pitch_card(r) for r in xi if r["position"] == pos)
+        + "</div>" for pos in POSITION_ORDER
+    )
+    bench_cards = "".join(_pitch_card(r) for r in bench)
+    return f"""
+<style>
+.pitch {{ position: relative; border-radius: 14px 14px 0 0; padding: 18px 8px 10px;
+  background: repeating-linear-gradient(180deg, #1f8f4e 0 56px, #23a058 56px 112px);
+  overflow: hidden; }}
+.pitch .lines {{ position: absolute; inset: 10px; border: 2px solid rgba(255,255,255,.55);
+  border-radius: 4px; pointer-events: none; }}
+.pitch .box {{ position: absolute; left: 30%; right: 30%; top: 10px; height: 13%;
+  border: 2px solid rgba(255,255,255,.55); border-top: none; }}
+.pitch .circle {{ position: absolute; left: 50%; bottom: -70px; width: 140px; height: 140px;
+  transform: translateX(-50%); border: 2px solid rgba(255,255,255,.55); border-radius: 50%; }}
+.prow {{ position: relative; display: flex; justify-content: center; gap: 2%;
+  margin: 10px 0 18px; }}
+.pcard {{ position: relative; width: 104px; text-align: center; }}
+.pcard img {{ width: 64px; height: auto; filter: drop-shadow(0 3px 3px rgba(0,0,0,.35)); }}
+.shirt-fallback {{ width: 56px; height: 60px; margin: 0 auto; border-radius: 10px 10px 6px 6px;
+  background: #0b2a5b; color: #fff; font-weight: 700; display: flex; align-items: center;
+  justify-content: center; }}
+.pname {{ background: #0b2a5b; color: #fff; font-weight: 700; font-size: .8rem;
+  border-radius: 6px 6px 0 0; padding: 3px 4px; white-space: nowrap; overflow: hidden;
+  text-overflow: ellipsis; }}
+.pinfo {{ background: #e8f0ff; color: #0b1a33; font-size: .75rem; border-radius: 0 0 6px 6px;
+  padding: 2px 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }}
+.badge {{ position: absolute; top: 0; width: 22px; height: 22px; border-radius: 50%;
+  font-size: .72rem; font-weight: 800; line-height: 22px; color: #fff;
+  box-shadow: 0 0 0 2px #fff; }}
+.badge.cap {{ right: 14px; background: #0b1a33; }}
+.badge.warn {{ left: 14px; background: #f2a900; color: #0b1a33; }}
+.badge.out {{ left: 14px; background: #d9342b; }}
+.bench {{ background: linear-gradient(180deg, #d6e4fb, #c3d6f6); border-radius: 0 0 14px 14px;
+  padding: 10px 8px 12px; }}
+.bench .label {{ color: #0b2a5b; font-weight: 800; font-size: .75rem; letter-spacing: .08em;
+  text-align: center; margin-bottom: 6px; }}
+@media (max-width: 640px) {{ .pcard {{ width: 19%; }} .pcard img {{ width: 44px; }}
+  .pname, .pinfo {{ font-size: .65rem; }} }}
+</style>
+<div class="pitch"><div class="lines"></div><div class="box"></div><div class="circle"></div>
+{lines}</div>
+<div class="bench"><div class="label">BENCH</div><div class="prow" style="margin:0">
+{bench_cards}</div></div>"""

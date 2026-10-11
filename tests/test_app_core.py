@@ -41,15 +41,15 @@ def test_page_renders_empty(data_root, page):
 
 def test_home_content(ui_data):
     at = _run("app/Home.py")
-    assert any("Gunners" in s.value or "Planning" in s.label for s in [*at.subheader, *at.metric])
+    assert any("Gunners" in h.proto.body for h in at.get("html"))
     assert len(at.metric) >= 5
 
 
 def test_my_team_shows_15(ui_data):
     at = _run("app/pages/1_My_Team.py")
     assert not at.exception
-    text = " ".join(m.value for m in at.markdown)
-    assert "Haaland" in text
+    pitch = " ".join(h.proto.body for h in at.get("html"))
+    assert "Haaland" in pitch and "shirt_" in pitch
     assert len(components.my_squad()) == 15
 
 

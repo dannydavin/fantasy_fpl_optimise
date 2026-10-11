@@ -9,6 +9,8 @@ import streamlit as st  # noqa: E402
 
 components.page_setup("My Team", ":shirt:")
 
+CHIP_ABBR = {"wildcard": "WC", "freehit": "FH", "bboost": "BB", "3xc": "TC", "manager": "AM"}
+
 sq = components.my_squad()
 if sq.empty:
     st.info("No squad data (my_team) yet. Run scripts/update.py.")
@@ -21,7 +23,9 @@ if not entry.empty:
     c[0].metric("Bank", f"£{float(e['bank']):.1f}m")
     c[1].metric("Free transfers", int(e["free_transfers"]))
     c[2].metric("Squad value", f"£{float(e['value']):.1f}m")
-    c[3].metric("Chips", str(e["chips_available"] or "none").replace(",", ", "))
+    chips = [x for x in str(e["chips_available"] or "").split(",") if x]
+    c[3].metric("Chips", " · ".join(CHIP_ABBR.get(x, x) for x in chips) or "none",
+                help=", ".join(chips) or None)
 
 gw0 = int(sq["gw"].iloc[0])
 gws = list(range(gw0, gw0 + 6))
@@ -68,26 +72,37 @@ if cells is not None and not cells.empty:
 else:
     st.info("No fixture_ticker yet; fixtures hidden.")
 
-st.subheader("Squad")
-view = st.radio("View", ["Pitch", "Table"], horizontal=True)
 
-if view == "Pitch":
+def _num(v, fmt: str) -> str:
+    return fmt.format(v) if pd.notna(v) else "-"
+
+
+INFO = {
+    "Next fixture": lambda r: r.get(fix_cols[0], "-"),
+    f"xP GW{gw0}": lambda r: _num(r.get(f"xp_gw{gw0}"), "{:.1f} xP"),
+    "xP next 6": lambda r: _num(r.get("xp_next6"), "{:.1f} xP"),
+    "Price": lambda r: _num(r.get("price"), "£{:.1f}m"),
+}
+
+st.subheader(f"Squad for GW{gw0}")
+left, right = st.columns([3, 1])
+with right:
+    show_info = st.radio("Under each player", list(INFO), index=1)
     xi = df[df["slot"] <= 11]
-    for pos in ("FWD", "MID", "DEF", "GKP"):
-        grp = xi[xi["position"] == pos]
-        cols = st.columns(max(len(grp), 1))
-        for col, r in zip(cols, grp.itertuples(), strict=False):
-            mark = f" ({r.role})" if r.role else ""
-            xp = f"{r.xp_next6:.1f}" if pd.notna(r.xp_next6) else "-"
-            warn = f"  \n:warning: {r.flag}" if r.flag else ""
-            col.markdown(
-                f"**{r.web_name}**{mark}  \n{r.team_short} £{r.price:.1f}m  \nxP6 {xp}"
-                f"{warn}"
-            )
-    st.markdown("**Bench:** " + " | ".join(
-        f"{r.slot - 11}. {r.web_name} ({r.position})" for r in df[df["slot"] > 11].itertuples()
-    ))
+    xp_col = f"xp_gw{gw0}"
+    if xp_col in xi.columns and xi[xp_col].notna().any():
+        st.metric(f"XI xP GW{gw0} (C doubled)",
+                  f"{(xi[xp_col] * xi['multiplier'].clip(lower=1)).sum():.1f}")
+        best = xi.loc[xi[xp_col].idxmax()]
+        st.metric("Top xP in XI", str(best["web_name"]), f"{best[xp_col]:.1f} xP",
+                  delta_color="off")
+    flagged = df[df["flag"] != ""]
+    if not flagged.empty:
+        st.warning("\n".join(f"- **{r.web_name}**: {r.flag}" for r in flagged.itertuples()))
+pitch = df.assign(info=[INFO[show_info](r) for r in df.to_dict("records")])
+left.html(components.pitch_html(pitch))
 
+st.subheader("Fixtures and xP")
 xp_cols = [f"xp_gw{g}" for g in gws]
 show = ["slot", "where", "web_name", "role", "position", "team_short", "price", "purchase_price",
         "sell_price", *xp_cols, "xp_next6", "flag", "price_flag"]
